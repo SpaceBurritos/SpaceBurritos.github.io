@@ -14,6 +14,8 @@
             --text-tertiary: #888;
             --accent: #2d5a27;
             --accent-light: #e8f0e6;
+            --accent-amber: #8a6a1f;
+            --accent-amber-light: #f5ecd5;
             --bg: #fafaf8;
             --card-bg: #ffffff;
             --border: #e5e5e0;
@@ -153,10 +155,20 @@
             font-weight: 600;
         }
 
+        .paper-status.preprint {
+            background: var(--accent-amber-light);
+            color: var(--accent-amber);
+        }
+
         .paper-desc {
             font-size: 0.92rem;
             color: var(--text-secondary);
             line-height: 1.7;
+        }
+
+        .paper-desc strong {
+            color: var(--text);
+            font-weight: 600;
         }
 
         .paper-links {
@@ -263,26 +275,18 @@
         <div class="links">
             <a href="mailto:andres.saurez95@gmail.com">Email</a>
             <a href="https://scholar.google.com/citations?user=ZwJoZ2QAAAAJ&hl=en">Google Scholar</a>
-            <!-- REPLACE: Your actual GitHub link -->
-            <a href="https://github.com/">GitHub</a>
+            <a href="https://github.com/SpaceBurritos">GitHub</a>
         </div>
     </header>
 
     <section class="vision">
         <div class="section-label">Research Vision</div>
         <p>
-            I study the geometric structure of how transformer models represent and manipulate concepts.
-            My work argues that interpretability is fundamentally a geometric problem: semantic features
-            must occupy context-invariant linear subspaces&mdash;not as an empirical regularity, but as
-            a necessary consequence of how transformers communicate through linear interfaces like OV
-            circuits and unembedding matrices.
-        </p>
-        <p>
-            This perspective unifies two lines of interpretability research that have developed largely in
-            isolation. Feature analysis (<em>what does the model represent?</em>) and circuit discovery
-            (<em>how does the model compute?</em>) turn out to be dual operations on the same geometric
-            structure: reading and writing directions in activation space. My goal is to develop this into
-            a rigorous mathematical framework for understanding transformer computation.
+            I'm drawn to questions about how transformer models work from the inside &mdash; how their
+            internal computations form, why they behave the way they do on particular inputs, and how we
+            can influence those behaviors at inference time. I don't see myself as specialized in one
+            narrow corner of interpretability; I follow questions where there's something genuinely
+            unclear and where I think careful analysis can help.
         </p>
     </section>
 
@@ -290,27 +294,30 @@
         <div class="section-label">Publications</div>
 
         <div class="paper">
-            <div class="paper-title">Why Linear Interpretability Works: Invariant Subspaces as a Result of Architectural Constraints</div>
+            <div class="paper-title">Why Linear Interpretability Works: Invariant Subspaces from Architectural Constraints</div>
             <div class="paper-meta">
                 <span>Andrés Sáurez, Yousung Lee, Dongsoo Har</span>
-                <span class="paper-status">Under Review &middot; ICML 2026</span>
+                <span class="paper-status">Under Review &middot; NeurIPS 2026</span>
             </div>
             <div class="paper-desc">
-                Why do linear probes and sparse autoencoders consistently recover meaningful structure from
-                transformer representations? We prove this is a consequence of architectural necessity:
-                any feature decoded through a transformer's linear interfaces (OV circuits, unembedding)
-                must occupy a context-invariant subspace (Invariant Subspace Necessity theorem). We derive
-                the Self-Reference Property&mdash;tokens directly encode their own feature directions&mdash;enabling
-                zero-shot identification of semantic structure without labeled data or learned probes.
-                Empirical validation across eight classification tasks and four model families (LLaMA3-8B,
-                Mistral-7B, GPT2-Small, LLaMA3.2-3B) confirms that linear probes, SAEs, and activation
-                steering all recover the same invariant directions, providing a unified architectural
-                explanation for why linear interpretability methods succeed.
+                Why do linear probes, sparse autoencoders, and activation steering consistently recover the
+                same structure from transformer representations? We argue this is a consequence of the
+                <strong>readout interface</strong>, not cross-entropy alone: linear unembedding makes every
+                logit margin a projection of the residual stream onto a fixed contrast direction, while
+                nonlinear readouts remove this necessity. A grokking ablation confirms the prediction&mdash;Fourier
+                (circular) embeddings emerge under linear or 2-layer readouts and vanish under deeper nonlinear
+                ones. From a sparse-superposition projection-error bound we derive the <strong>Self-Reference
+                Property</strong>: a class prompt's own activation acts as a label-free reference for its
+                feature direction, enabling zero-shot classification in a single forward pass, with SAE overlap
+                analysis confirming class-token and instance activations recruit the same dictionary atoms.
+                Validated across 8 classification tasks, 4 model families (LLaMA3-8B, Mistral-7B, GPT2-Small,
+                LLaMA3.2-3B), and 3 architectures (decoder-only LLMs, BERT, ViT/LLaVA). Extended to circuit
+                attribution: the projection-based variant <strong>SRP-BP outperforms AtP and AtP*</strong> on
+                IOI in GPT-2 small, with predicted vs. observed direct logit attribution matching at
+                <strong>slope 1.07, R<sup>2</sup>=0.92</strong>.
             </div>
             <div class="paper-links">
                 <a href="https://arxiv.org/abs/2602.09783">arXiv</a>
-                <!-- REPLACE: Actual links -->
-                <a href="#">Code</a>
             </div>
         </div>
 
@@ -318,23 +325,23 @@
             <div class="paper-title">Circuit Fingerprints: How Answer Tokens Encode Their Geometrical Path</div>
             <div class="paper-meta">
                 <span>Andrés Sáurez, Neha Sengar, Dongsoo Har</span>
-                <span class="paper-status">Under Review &middot; ICML 2026</span>
+                <span class="paper-status preprint">Preprint</span>
             </div>
             <div class="paper-desc">
                 Circuit discovery and activation steering have developed as separate research threads&mdash;we
                 show they follow a single geometric principle. Answer tokens, processed in isolation, encode
-                the computational pathways that produce them (Circuit Fingerprint Hypothesis), enabling
-                gradient-free circuit discovery from geometric alignment alone. Validated on standard
-                benchmarks (IOI, SVA, MCQA) across GPT2-Small, Qwen2.5-0.5B, Llama3.2-1B, and OPT-1.3B,
-                achieving performance comparable to gradient-based methods (EAP, EAP-IG). The same
-                directions that identify circuit components also enable controlled steering&mdash;and can be
-                extended to discover feature circuits for emotions, languages, and personas via prompt
-                engineering alone, without task-specific datasets.
+                the computational pathways that produce them (<strong>Circuit Fingerprint Hypothesis</strong>),
+                enabling gradient-free circuit discovery from geometric alignment alone. Validated on standard
+                benchmarks (IOI, SVA, MCQA) using CPR/CMD metrics (MIB) across GPT2-Small, Qwen2.5-0.5B,
+                Llama3.2-1B, and OPT-1.3B, achieving performance comparable to gradient-based methods
+                (EAP, EAP-IG). The same directions that identify circuit components also enable controlled
+                steering&mdash;<strong>geometric steering reaches 69.8% emotion-classification accuracy vs.
+                53.1% for instruction prompting</strong>, while preserving factual accuracy (89.6% vs. 91.2%
+                baseline)&mdash;and can be extended to discover feature circuits for emotions, languages, and
+                personas via prompt engineering alone, without task-specific datasets.
             </div>
             <div class="paper-links">
                 <a href="https://arxiv.org/abs/2602.09784">arXiv</a>
-                <!-- REPLACE: Actual links -->
-                <a href="#">Code</a>
             </div>
         </div>
 
@@ -342,7 +349,7 @@
             <div class="paper-title">Few Contrastive Attention Heads Enable Visual Grounding in Large VLMs</div>
             <div class="paper-meta">
                 <span>Neha Sengar, Andrés Sáurez, Dongsoo Har</span>
-                <span class="paper-status">Under Review &middot; IJCAI 2026</span>
+                <span class="paper-status">Under Review &middot; TMLR 2026</span>
             </div>
         </div>
 
@@ -350,7 +357,7 @@
             <div class="paper-title">DEPLOY-RL: Active Boundary Discovery and Conservative Certification for Deployable RL in Safety-Critical Continuous Processes</div>
             <div class="paper-meta">
                 <span>Yeojin Jang, Minu Baek, Gihun Gil, et al.</span>
-                <span class="paper-status">Under Review &middot; IJCAI 2026</span>
+                <span class="paper-status">IJCAI 2026</span>
             </div>
         </div>
 
@@ -358,7 +365,7 @@
             <div class="paper-title">Continuous Adversarial Text Representation Learning for Affective Recognition</div>
             <div class="paper-meta">
                 <span>Seungah Son, Andrés Sáurez, Dongsoo Har</span>
-                <span class="paper-status">Published &middot; ICAIIC 2025</span>
+                <span class="paper-status">ICAIIC 2025</span>
             </div>
             <div class="paper-desc" style="margin-top: 10px;">
                 A framework for enhancing emotion-aware embeddings in transformer-based models.
@@ -378,17 +385,15 @@
     <section class="about">
         <div class="section-label">About</div>
         <p>
-            I'm a Master's student in the Robotics Program at KAIST, researching mechanistic
-            interpretability of transformer models with an emphasis on mathematical foundations.
-            My work engages with the Linear Representation Hypothesis
-            (<a href="https://arxiv.org/abs/2311.03658" style="color: var(--accent); text-decoration: none;">Park et al., 2024</a>),
-            causal abstraction
-            (<a href="https://arxiv.org/abs/2301.04709" style="color: var(--accent); text-decoration: none;">Geiger et al., 2024</a>),
-            and geometric approaches to neural network analysis.
+            I recently completed my MS in the Robotics Program at KAIST, where I researched mechanistic
+            interpretability of transformer models. My work has centered on how linear structure emerges
+            in transformer representations, how it lets us trace specific computations through the
+            network, and what its underlying geometry reveals about how these models work.
         </p>
         <p>
-            Before KAIST, I worked as a software engineer at TransUnion, ValueLabs, and as a freelance
-            ML consultant. I hold a degree in mechanical engineering and transitioned into machine learning
+            Before KAIST, I worked as a software engineer at TransUnion (backend, monolith-to-microservices
+            migration), Upwork (frontend performance and internationalization), and ValueLabs (Java application
+            modernization). I hold a degree in mechanical engineering and transitioned into machine learning
             research driven by an interest in understanding how intelligent systems work from the inside out.
             Originally from Costa Rica.
         </p>
@@ -400,13 +405,13 @@
 
         <dl class="details">
             <dt>Education</dt>
-            <dd>MS Robotics, KAIST (current) &middot; BS Mechanical Engineering</dd>
+            <dd>MS Robotics, KAIST &middot; BS Mechanical Engineering, UCR</dd>
             <dt>Languages</dt>
-            <dd>Spanish (native) &middot; English &middot; Korean</dd>
+            <dd>Spanish (native) &middot; English (TOEFL 104) &middot; Korean (lower-intermediate)</dd>
             <dt>Previously</dt>
-            <dd>TransUnion &middot; ValueLabs &middot; Upwork</dd>
+            <dd>TransUnion &middot; Upwork &middot; ValueLabs</dd>
             <dt>Other</dt>
-            <dd>National powerlifting record holder, Costa Rica</dd>
+            <dd>National powerlifting record holder, Costa Rica (82.5kg, 2023)</dd>
         </dl>
     </section>
 
